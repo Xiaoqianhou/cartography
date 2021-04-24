@@ -209,7 +209,7 @@ def write_filtered_data(args, train_dy_metrics):
                   from_dir=os.path.join(args.data_dir, ''),
                   to_dir=outdir)
 
-    num_samples = int(fraction * len(train_numeric))
+    num_samples = int(fraction * 5276)
     with open(os.path.join(outdir, f"train.tsv"), "w") as outfile:
       outfile.write(header + "\n")
       selected = sorted_scores.head(n=num_samples+1)#5267
