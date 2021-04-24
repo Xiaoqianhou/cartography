@@ -95,7 +95,7 @@ def set_seed(args):
         torch.cuda.manual_seed_all(args.seed)
 
 
-def train(args, train_dataset, model, tokenizer):
+def train(args,input_qnlidata_dir, train_dataset, model, tokenizer,qnlimodel_output_path):
     """ Train the model """
     if args.local_rank in [-1, 0]:
         tb_writer = SummaryWriter()
@@ -226,6 +226,8 @@ def train(args, train_dataset, model, tokenizer):
                 inputs["token_type_ids"] = (
                     batch[2] if args.model_type in ["bert", "xlnet", "albert"] else None
                 )  # XLM, DistilBERT, RoBERTa, and XLM-RoBERTa don't use segment_ids
+            if hasattr(torch.cuda, 'empty_cache'):
+                torch.cuda.empty_cache()
             outputs = model(**inputs)
             loss = outputs[0]  # model outputs are always tuple in transformers (see doc)
 
@@ -272,7 +274,7 @@ def train(args, train_dataset, model, tokenizer):
                     # Only evaluate when single GPU otherwise metrics may not average well
                     if args.local_rank == -1 and args.evaluate_during_training_epoch:
                         logger.info(f"From within the epoch at step {step}")
-                        results, _ = evaluate(args, model, tokenizer)
+                        results, _ = evaluate(args,input_qnlidata_dir,qnlimodel_output_path, model, tokenizer)
                         for key, value in results.items():
                             eval_key = "eval_{}".format(key)
                             epoch_log[eval_key] = value
@@ -291,7 +293,7 @@ def train(args, train_dataset, model, tokenizer):
                     global_step % args.save_steps == 0
                 ):
                     # Save model checkpoint
-                    output_dir = os.path.join(args.output_dir, "checkpoint-{}".format(global_step))
+                    output_dir = os.path.join(qnlimodel_output_path, "checkpoint-{}".format(global_step))
                     if not os.path.exists(output_dir):
                         os.makedirs(output_dir)
                     model_to_save = (
@@ -317,10 +319,10 @@ def train(args, train_dataset, model, tokenizer):
         # Only evaluate when single GPU otherwise metrics may not average well
         if args.local_rank == -1 and args.evaluate_during_training:
             best_dev_performance, best_epoch = save_model(
-                args, model, tokenizer, epoch, best_epoch, best_dev_performance)
+                args,input_qnlidata_dir, model, tokenizer, epoch, best_epoch, best_dev_performance,qnlimodel_output_path)
 
         # Keep track of training dynamics.
-        log_training_dynamics(output_dir=args.output_dir,
+        log_training_dynamics(output_dir=qnlimodel_output_path,
                               epoch=epoch,
                               train_ids=list(train_ids),
                               train_logits=list(train_logits),
@@ -336,7 +338,7 @@ def train(args, train_dataset, model, tokenizer):
         epoch_loss = tr_loss
 
         logger.info(f"  End of epoch : {epoch}")
-        with open(os.path.join(args.output_dir, f"eval_metrics_train.json"), "a") as toutfile:
+        with open(os.path.join(qnlimodel_output_path, f"eval_metrics_train.json"), "a") as toutfile:
             toutfile.write(json.dumps(epoch_log) + "\n")
         for key, value in epoch_log.items():
             tb_writer.add_scalar(key, value, global_step)
@@ -357,8 +359,8 @@ def train(args, train_dataset, model, tokenizer):
     return global_step, tr_loss / global_step
 
 
-def save_model(args, model, tokenizer, epoch, best_epoch,  best_dev_performance):
-    results, _ = evaluate(args, model, tokenizer, prefix="in_training")
+def save_model(args,input_qnlidata_dir, model, tokenizer, epoch, best_epoch,  best_dev_performance,qnlimodel_output_path):
+    results, _ = evaluate(args,input_qnlidata_dir,qnlimodel_output_path, model, tokenizer, prefix="in_training")
     # TODO(SS): change hard coding `acc` as the desired metric, might not work for all tasks.
     desired_metric = "acc"
     dev_performance = results.get(desired_metric)
@@ -369,25 +371,25 @@ def save_model(args, model, tokenizer, epoch, best_epoch,  best_dev_performance)
         # Save model checkpoint
         # Take care of distributed/parallel training
         model_to_save = (model.module if hasattr(model, "module") else model)
-        model_to_save.save_pretrained(args.output_dir)
-        tokenizer.save_pretrained(args.output_dir)
-        torch.save(args, os.path.join(args.output_dir, "training_args.bin"))
+        model_to_save.save_pretrained(qnlimodel_output_path)
+        tokenizer.save_pretrained(qnlimodel_output_path)
+        torch.save(args, os.path.join(qnlimodel_output_path, "training_args.bin"))
 
         logger.info(f"*** Found BEST model, and saved checkpoint. "
             f"BEST dev performance : {dev_performance:.4f} ***")
     return best_dev_performance, best_epoch
 
 
-def evaluate(args, model, tokenizer, prefix="", eval_split="dev"):
+def evaluate(args,input_qnlidata_dir,qnlimodel_output_path, model, tokenizer, prefix="", eval_split="dev"):
     # We do not really need a loop to handle MNLI double evaluation (matched, mis-matched).
     eval_task_names = (args.task_name,)
-    eval_outputs_dirs = (args.output_dir,)
+    eval_outputs_dirs = (qnlimodel_output_path,)
 
     results = {}
     all_predictions = {}
     for eval_task, eval_output_dir in zip(eval_task_names, eval_outputs_dirs):
         eval_dataset = load_and_cache_examples(
-            args, eval_task, tokenizer, evaluate=True, data_split=f"{eval_split}_{prefix}")
+            args,input_qnlidata_dir, eval_task, tokenizer, evaluate=True, data_split=f"{eval_split}_{prefix}")
 
         if not os.path.exists(eval_output_dir) and args.local_rank in [-1, 0]:
             os.makedirs(eval_output_dir)
@@ -477,21 +479,21 @@ def evaluate(args, model, tokenizer, prefix="", eval_split="dev"):
     return results, all_predictions
 
 
-def load_dataset(args, task, eval_split="train"):
+def load_dataset(args,input_qnlidata_dir, task, eval_split="train"):
     processor = processors[task]()
     if eval_split == "train":
         if args.train is None:
-            examples = processor.get_train_examples(args.data_dir)
+            examples = processor.get_train_examples(input_qnlidata_dir)
         else:
             examples = processor.get_examples(args.train, "train")
     elif "dev" in eval_split:
         if args.dev is None:
-            examples = processor.get_dev_examples(args.data_dir)
+            examples = processor.get_dev_examples(input_qnlidata_dir)
         else:
             examples = processor.get_examples(args.dev, "dev")
     elif "test" in eval_split:
         if args.test is None:
-            examples = processor.get_test_examples(args.data_dir)
+            examples = processor.get_test_examples(input_qnlidata_dir)
         else:
             examples = processor.get_examples(args.test, "test")
     else:
@@ -515,7 +517,7 @@ def get_winogrande_tensors(features):
     return dataset
 
 
-def load_and_cache_examples(args, task, tokenizer, evaluate=False, data_split="train"):
+def load_and_cache_examples(args,input_qnlidata_dir, task, tokenizer, evaluate=False, data_split="train"):
     if args.local_rank not in [-1, 0] and not evaluate:
         # Make sure only the first process in distributed training process the dataset,
         # and the others will use the cache
@@ -524,10 +526,10 @@ def load_and_cache_examples(args, task, tokenizer, evaluate=False, data_split="t
     processor = processors[task]()
     output_mode = output_modes[task]
 
-    if not os.path.exists(args.features_cache_dir):
-        os.makedirs(args.features_cache_dir)
+    if not os.path.exists(input_qnlidata_dir+'/cache_'+str(args.seed )):
+        os.makedirs(input_qnlidata_dir+'/cache_'+str(args.seed))
     cached_features_file = os.path.join(
-        args.features_cache_dir,
+        input_qnlidata_dir+'/cache_'+str(args.seed),
         "cached_{}_{}_{}_{}".format(
             data_split,
             list(filter(None, args.model_name_or_path.split("/"))).pop(),
@@ -540,12 +542,12 @@ def load_and_cache_examples(args, task, tokenizer, evaluate=False, data_split="t
         logger.info("Loading features from cached file %s", cached_features_file)
         features = torch.load(cached_features_file)
     else:
-        logger.info("Creating features from dataset file at %s", args.data_dir)
+        logger.info("Creating features from dataset file at %s", input_qnlidata_dir)
         label_list = processor.get_labels()
         if task in ["mnli", "mnli-mm"] and args.model_type in ["roberta", "xlmroberta"]:
             # HACK(label indices are swapped in RoBERTa pretrained model)
             label_list[1], label_list[2] = label_list[2], label_list[1]
-        examples = load_dataset(args, task, data_split)
+        examples = load_dataset(args,input_qnlidata_dir, task, data_split)
         if task == "winogrande":
             features = convert_mc_examples_to_features(
                 examples,
@@ -591,13 +593,13 @@ def load_and_cache_examples(args, task, tokenizer, evaluate=False, data_split="t
     return dataset
 
 
-def run_transformer(args):
-    if (os.path.exists(args.output_dir)
-        and os.listdir(args.output_dir)
+def run_transformer(args,qnlimodel_output_path,input_qnlidata_dir):
+    if (os.path.exists(qnlimodel_output_path)
+        and os.listdir(qnlimodel_output_path)
         and args.do_train
         and not args.overwrite_output_dir):
         raise ValueError(
-            f"Output directory ({args.output_dir}) already exists and is not empty."
+            f"Output directory ({qnlimodel_output_path}) already exists and is not empty."
             f" Use --overwrite_output_dir to overcome.")
 
     # Setup distant debugging if needed
@@ -680,18 +682,18 @@ def run_transformer(args):
     args.learning_rate = float(args.learning_rate)
     if args.do_train:
         # If training for the first time, remove cache. If training from a checkpoint, keep cache.
-        if os.path.exists(args.features_cache_dir) and not args.overwrite_output_dir:
+        if os.path.exists(input_qnlidata_dir+'/cache_'+str(args.seed)) and not args.overwrite_output_dir:
             logger.info(f"Found existing cache for the same seed {args.seed}: "
-                        f"{args.features_cache_dir}...Deleting!")
-            shutil.rmtree(args.features_cache_dir)
+                        f"{input_qnlidata_dir+'/cache_'+str(args.seed)}...Deleting!")
+            shutil.rmtree(input_qnlidata_dir+'/cache_'+str(args.seed))
 
         # Create output directory if needed
-        if not os.path.exists(args.output_dir) and args.local_rank in [-1, 0]:
-            os.makedirs(args.output_dir)
-            save_args_to_file(args, mode="train")
+        if not os.path.exists(qnlimodel_output_path) and args.local_rank in [-1, 0]:
+            os.makedirs(qnlimodel_output_path)
+            save_args_to_file(qnlimodel_output_path,args, mode="train")
 
-        train_dataset = load_and_cache_examples(args, args.task_name, tokenizer, evaluate=False)
-        global_step, tr_loss = train(args, train_dataset, model, tokenizer)
+        train_dataset = load_and_cache_examples(args,input_qnlidata_dir, args.task_name, tokenizer, evaluate=False)
+        global_step, tr_loss = train(args,input_qnlidata_dir, train_dataset, model, tokenizer,qnlimodel_output_path)
         logger.info(f" global_step = {global_step}, average loss = {tr_loss:.4f}")
 
     # Saving best-practices: if you use defaults names for the model,
@@ -699,17 +701,17 @@ def run_transformer(args):
     if args.do_train and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
 
         if not args.evaluate_during_training:
-            logger.info("Saving model checkpoint to %s", args.output_dir)
+            logger.info("Saving model checkpoint to %s", qnlimodel_output_path)
             # Save a trained model, configuration and tokenizer using `save_pretrained()`.
             # They can then be reloaded using `from_pretrained()`
 
             # Take care of distributed/parallel training
             model_to_save = (model.module if hasattr(model, "module") else model)
-            model_to_save.save_pretrained(args.output_dir)
-            tokenizer.save_pretrained(args.output_dir)
+            model_to_save.save_pretrained(qnlimodel_output_path)
+            tokenizer.save_pretrained(qnlimodel_output_path)
 
             # Good practice: save your training arguments together with the trained model
-            torch.save(args, os.path.join(args.output_dir, "training_args.bin"))
+            torch.save(args, os.path.join(qnlimodel_output_path, "training_args.bin"))
 
         logger.info(" **** Done with training ****")
 
@@ -722,12 +724,12 @@ def run_transformer(args):
 
     if args.do_test or args.do_eval and args.local_rank in [-1, 0]:
 
-        tokenizer = tokenizer_class.from_pretrained(args.output_dir, do_lower_case=args.do_lower_case)
-        checkpoints = [args.output_dir]
+        tokenizer = tokenizer_class.from_pretrained(qnlimodel_output_path, do_lower_case=args.do_lower_case)
+        checkpoints = [qnlimodel_output_path]
         if args.eval_all_checkpoints:
             checkpoints = list(
                 os.path.dirname(c) for c in sorted(
-                    glob.glob(args.output_dir + "/**/" + WEIGHTS_NAME, recursive=True))
+                    glob.glob(qnlimodel_output_path + "/**/" + WEIGHTS_NAME, recursive=True))
             )
             logging.getLogger("transformers.modeling_utils").setLevel(logging.WARN)  # Reduce logging
         logger.info("Evaluate the following checkpoints: %s", checkpoints)
@@ -740,54 +742,71 @@ def run_transformer(args):
             model = model_class.from_pretrained(checkpoint)
             model.to(args.device)
             for eval_split in eval_splits:
-                save_args_to_file(args, mode=eval_split)
-                result, predictions = evaluate(args, model, tokenizer, prefix=prefix, eval_split=eval_split)
+                save_args_to_file(qnlimodel_output_path,args, mode=eval_split)
+                result, predictions = evaluate(args,input_qnlidata_dir,qnlimodel_output_path, model, tokenizer, prefix=prefix, eval_split=eval_split)
                 result = dict((k + f"_{global_step}", v) for k, v in result.items())
+                #把每次的结果写入txt文档中，a表示是在末尾追加，如果用w会覆盖
+                f = open('result.txt','a')
+                #向文件中写入的东西必须是字符串
+                f.write(str(result['acc_'])+'\n')
+                f.close()
                 results.update(result)
 
             if args.test and "diagnostic" in args.test:
                 # For running diagnostics with MNLI, run as SNLI and use hack.
                 evaluate_by_category(predictions[args.task_name],
-                                     mnli_hack=True if args.task_name in ["SNLI", "snli"] and "mnli" in args.output_dir else False,
-                                     eval_filename=os.path.join(args.output_dir, f"eval_metrics_diagnostics.json"),
+                                     mnli_hack=True if args.task_name in ["SNLI", "snli"] and "mnli" in qnlimodel_output_path else False,
+                                     eval_filename=os.path.join(qnlimodel_output_path, f"eval_metrics_diagnostics.json"),
                                      diagnostics_file_carto=args.test)
+    
+    
     logger.info(" **** Done ****")
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    for i in range(21):
+        #每一次训练的模型放在不同的文件夹中
+        qnlimodel_output_path = 'qnli_whole' + str(i)
+        #每次用的数据放在不同的文件夹中
+        input_qnlidata_dir = '/home/yang/333/QNLI/qnli' + str(i)
+        parser = argparse.ArgumentParser()
 
-    parser.add_argument("--config",
-                        "-c",
-                        type=os.path.abspath,
-                        required=True,
-                        help="Main config file with basic arguments.")
-    parser.add_argument("--output_dir",
-                        "-o",
-                        type=os.path.abspath,
-                        required=True,
-                        help="Output directory for model.")
-    parser.add_argument("--do_train",
+        parser.add_argument("--config",
+                            "-c",
+                            type=os.path.abspath,
+                            required=True,
+                            help="Main config file with basic arguments.")
+        parser.add_argument("--do_train",
                         action="store_true",
                         help="Whether to run training.")
-    parser.add_argument("--do_eval",
+        parser.add_argument("--do_eval",
                         action="store_true",
                         help="Whether to run eval on the dev set.")
-    parser.add_argument("--do_test",
+        parser.add_argument("--do_test",
                         action="store_true",
                         help="Whether to run eval on the (OOD) test set.")
-    parser.add_argument("--test",
+        parser.add_argument("--test",
                         type=os.path.abspath,
                         help="OOD test set.")
 
     # TODO(SS): Automatically map tasks to OOD test sets.
 
-    args_from_cli = parser.parse_args()
+        args_from_cli = parser.parse_args()
 
-    other_args = json.loads(_jsonnet.evaluate_file(args_from_cli.config))
-    other_args.update(**vars(args_from_cli))
-    args = Params(MODEL_CLASSES, ALL_MODELS, processors, other_args)
-    run_transformer(args)
+        other_args = json.loads(_jsonnet.evaluate_file(args_from_cli.config))
+        other_args.update(**vars(args_from_cli))
+        args = Params(MODEL_CLASSES, ALL_MODELS, processors, other_args)
+        run_transformer(args,qnlimodel_output_path,input_qnlidata_dir)
+    
+'''    final_acc = 0.0
+    f = open('result.txt','r')
+    lines = f.readlines()
+    for line in lines:
+        
+        final_acc += float(line)
+    print("The accuracy is:")
+    print(final_acc/21)'''
+
 
 
 if __name__ == "__main__":
