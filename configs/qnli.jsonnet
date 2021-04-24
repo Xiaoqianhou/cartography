@@ -6,17 +6,16 @@ local NUM_EPOCHS = 20;
 local SEED = 80965;
 
 local TASK = "QNLI";
-local DATA_DIR = "/home/swabhas/data/glue/" + TASK;
+
 local FEATURES_CACHE_DIR = DATA_DIR + "/cache_" + SEED ;
 
 {
-   "data_dir": DATA_DIR,
-   "model_type": "roberta",
-   "model_name_or_path": "roberta-large",
+   "model_type": "bert",
+   "model_name_or_path": "bert-base-uncased",
    "task_name": TASK,
    "seed": SEED,
    "num_train_epochs": NUM_EPOCHS,
    "learning_rate": LEARNING_RATE,
-   "features_cache_dir": FEATURES_CACHE_DIR,
+   
    "per_gpu_train_batch_size": BATCH_SIZE
 }
