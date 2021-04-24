@@ -32,7 +32,7 @@ glue_processors["winogrande"] = WinograndeProcessor
 
 glue_output_modes["snli"] = "classification"
 glue_output_modes["winogrande"] = "classification"
-
+glue_output_modes["qnli"] = "classification"
 
 class AdaptedInputFeatures(InputFeatures):
     def __init__(self, input_ids, attention_mask=None, token_type_ids=None, label=None, example_id=None):
