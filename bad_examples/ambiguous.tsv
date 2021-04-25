@@ -1,0 +1,110 @@
+index	question	sentence	"label
+"
+107114	When was Johann Tetzel sent by the Roman Catholic Church to Germany to sell indulgences?	The benefits of good works could be obtained by donating money to the church.	"not_entailment
+"
+105298	How many women were employed in construction in 2011?	"In the United States, the industry in 2014 has around $960 billion in annual revenue according to statistics tracked by the Census Bureau, of which $680 billion is private (split evenly between residential and nonresidential) and the remainder is government."	"not_entailment
+"
+105681	"By the opening of the 2008 General Conference, what was the total UMC membership?"	"Given current trends in the UMCwith overseas churches growing, especially in Africa, and U.S. churches collectively losing about 1,000 members a weekit has been estimated that Africans will make up at least 30% of the delegates at the 2012 General Conference, and it is also possible that 40% of the delegates will be from outside the U.S. One Congolese bishop has estimated that typical Sunday attendance of the UMC is higher in his country than in the entire United States."	"not_entailment
+"
+108983	"""The term """"southern"""" California usually refers to how many of the southern-most counties of the state?"""	"Southern California is not a formal geographic designation, and definitions of what constitutes southern California vary."	"not_entailment
+"
+105595	"How much money did Dillon, Read & Co offer Mark Woods for NBC Blue?"	"Once Mutual's appeals against the FCC were rejected, RCA decided to sell NBC Blue in 1941, and gave the mandate to do so to Mark Woods."	"not_entailment
+"
+108698	On what date was oxygen liquefied in a stable form?	Only a few drops of the liquid were produced in either case so no meaningful analysis could be conducted.	"not_entailment
+"
+107550	What was the Yuan's Persian ally?	"Buddhism had a great influence in the Yuan government, and the Tibetan-rite Tantric Buddhism had significantly influenced China during this period."	"not_entailment
+"
+108315	What was the effect of the housing crash on the region?	Southern California's economy is diverse and one of the largest in the United States.	"not_entailment
+"
+109909	Charleston settler Elie Prioleau was from what French town?	He became pastor of the first Huguenot church in North America in that city.	"not_entailment
+"
+109925	Who defeated Montcalm at Quebec?	"The victory was made complete in 1760 when, despite losing outside Quebec City in the Battle of Sainte-Foy, the British were able to prevent the arrival of French relief ships in the naval Battle of the Restigouche while armies marched on Montreal from three sides."	"not_entailment
+"
+105937	Who were otachi?	Confucian scholars were attracted to the medical profession because it ensured a high income and medical ethics were compatible with Confucian virtues.	"not_entailment
+"
+105682	What did Paul-Louis Simond establish in 1898?	"The investigation of the pathogen that caused the 19th-century plague was begun by teams of scientists who visited Hong Kong in 1894, among whom was the French-Swiss bacteriologist Alexandre Yersin, after whom the pathogen was named Yersinia pestis."	"not_entailment
+"
+108625	Who killed Harold II?	"Early Norman kings of England, as Dukes of Normandy, owed homage to the King of France for their land on the continent."	"not_entailment
+"
+108303	"When the election produced an SNP majority government, what was it the first occurrence of?"	The SNP overall majority meant that there was sufficient support in the Scottish Parliament to hold a referendum on Scottish independence.	"not_entailment
+"
+107495	What voyager said that Mombasa was a great harbour and moored small crafts and great ships?	"The Swahili built Mombasa into a major port city and established trade links with other nearby city-states, as well as commercial centres in Persia, Arabia, and even India."	"not_entailment
+"
+106866	What special audio recording was released for the 40th anniversary?	"Additionally, multiple Doctors have returned in new adventures together in audio dramas based on the series."	"not_entailment
+"
+105473	What philosophies underlay Chinese medicine?	"No Chinese translation of Western medical works is known, but it is possible that the Chinese had access to Avicenna's The Canon of Medicine."	"not_entailment
+"
+105232	What was Ban Ki-Moon the Secretary General of?	"While acknowledging the central role economic growth can potentially play in human development, poverty reduction and the achievement of the Millennium Development Goals, it is becoming widely understood amongst the development community that special efforts must be made to ensure poorer sections of society are able to participate in economic growth."	"not_entailment
+"
+104878	Agassiz's approach to science combined observation and what?	"When it came to explaining life-forms, Agassiz resorted to matters of shape based on a presumed archetype for his evidence."	"not_entailment
+"
+index	question	sentence	"label
+"
+108262	How many species of insects are known in the region?	"One in five of all the bird species in the world live in the rainforests of the Amazon, and one in five of the fish species live in Amazonian rivers and streams."	"not_entailment
+"
+109174	What was the name of the set top box manufacturer that BSkyB was having issues with?	"Prior to its launch, BSkyB claimed that 40,000 people had registered to receive the HD service."	"not_entailment
+"
+105992	When did Washington reach Fort Le Boeuf?	"To counter the French military presence in Ohio, in October 1753 Dinwiddie ordered the 21-year-old Major George Washington (whose brother was another Ohio Company investor) of the Virginia Regiment to warn the French to leave Virginia territory."	"not_entailment
+"
+109185	How many homes had BSkyB's direct-to-home satellite service available to them in 2010?	"The target was first announced in August 2004, since then an additional 2.4m customers had subscribed to BSkyB's direct-to-home service."	"not_entailment
+"
+108193	Which two Mongol leaders added Persia to the Mongol Empire?	"The famous cavalry expedition led by Subutai and Jebe, in which they encircled the entire Caspian Sea defeating all armies in their path, remains unparalleled to this day, and word of the Mongol triumphs began to trickle to other nations, particularly Europe."	"entailment
+"
+107546	In what decade was seafloor spreading discovered?	This coupling between rigid plates moving on the surface of the Earth and the convecting mantle is called plate tectonics.	"not_entailment
+"
+107768	In which year are the Meissen Vulture in the V&A collection dated?	"Well represented in the collection is Meissen porcelain, from the first factory in Europe to discover the Chinese method of making porcelain."	"not_entailment
+"
+109468	What South African industry descended from Huguenot settlers?	Many of the farms in the Western Cape province in South Africa still bear French names.	"not_entailment
+"
+109684	Where did ITV Tyne Tees move in 2005?	ITV Tyne Tees was based at City Road for over 40 years after its launch in January 1959.	"not_entailment
+"
+109772	What is the time period of this statistic?	"A study by the American Association of University Women reported that 9.6% of students in the United States claim to have received unwanted sexual attention from an adult associated with education; be they a volunteer, bus driver, teacher, administrator or other adult; sometime during their educational career."	"entailment
+"
+108212	What is the annual construction industry revenue in 2014?	"In the United States, approximately 828,000 women were employed in the construction industry as of 2011."	"not_entailment
+"
+108837	Where does southern California's megalopolis standard in terms of population nationwide?	"The urban area is also host to an international metropolitan region in the form of San DiegoCTijuana, created by the urban area spilling over into Baja California."	"not_entailment
+"
+105302	What year did Tesla avade the draft?	"He read many books while in Tomingaj, and later said that Mark Twain's works had helped him to miraculously recover from his earlier illness."	"not_entailment
+"
+107699	"In 2009, Disney reached an agreement to buy what percentage stake in Hulu?"	"The Walt Disney Company is also a part-owner of Hulu (as part of a consortium that includes, among other parties, the respective parent companies of NBC and Fox, NBCUniversal and 21st"	"not_entailment
+"
+109680	When was the charter for this church signed?	"The flight of Huguenot refugees from Tours, France drew off most of the workers of its great silk mills which they had built.[citation needed]"	"not_entailment
+"
+106880	Who is the first administrator of the Federal Energy Office?	"Simon allocated states the same amount of domestic oil for 1974 that each had consumed in 1972, which worked for states whose populations were not increasing."	"not_entailment
+"
+105968	The Art Deco style of glassware is represented by which artist?	"The stained glass collection is possibly the finest in the world, covering the medieval to modern periods, and covering Europe as well as Britain."	"not_entailment
+"
+109439	What happened to nearby light bulbs?	People walking along the street observed sparks jumping between their feet and the ground.	"not_entailment
+"
+104890	What did the Gulf War inadvertently do in the early 1990s?	Prior to 1990 Saudi Arabia played an important role in restraining the many Islamist groups that received its aid.	"not_entailment
+"
+107671	When did Mechlin lace develop?	"Although 19th century sources have asserted that some of these refugees were lacemakers and contributed to the East Midlands lace industry, this is contentious."	"not_entailment
+"
+105420	Where was the Gate of King Hugo?	"""It was in this place in Tours that the prtendus rforms (""""these supposedly 'reformed'"""") habitually gathered at night, both for political purposes, and for prayer and singing psalms."""	"entailment
+"
+105252	What is the lowest recorded temperature in Victoria?	Temperature extremes for the state are listed in the table below:	"not_entailment
+"
+107854	In which months does Fresno experience increased wind coming from the southeastern direction?	"Summers provide considerable sunshine, with July peaking at 97 percent of the total possible sunlight hours; conversely, January is the lowest with only 46 percent of the daylight time in sunlight because of thick tule fog."	"not_entailment
+"
+109898	Who translated this version of the scriptures?	The availability of the Bible in vernacular languages was important to the spread of the Protestant movement and development of the Reformed church in France.	"not_entailment
+"
+109084	What was the name of the Tangut capital?	"At Deshun, the Tangut general Ma Jianlong put up a fierce resistance for several days and personally led charges against the invaders outside the city gate."	"not_entailment
+"
+107396	"Who do Priesthood representatives defer to, at times?"	"""The role of """"spiritual teacher"""" may be filled by many individuals in the LDS Church, often a trusted friend, who may hold any office, from Elder to Bishop, or no office at all."""	"not_entailment
+"
+105899	When was the FIS founded?	The FIS won sweeping victories in local elections and it was going to win national elections in 1991 when voting was canceled by a military coup d'tat.	"not_entailment
+"
+106965	what did he do for $2 a day?	He even lost control of the patents he had generated since he had assigned them to the company in lieu of stock.	"not_entailment
+"
+105204	What is the Canal in Wesel?	One of the most important cities in this region is Duisburg with the largest river port in Europe (Duisport).	"not_entailment
+"
+105945	What did the Soviets intend to use in spacecraft after the success of Zond 5?	In the summer it had become clear that the LM would not be ready in time.	"not_entailment
+"
+109467	What year did Robert J. Shiller win an Economics Nobel prize?	"High and persistent unemployment, in which inequality increases, has a negative effect on subsequent long-run economic growth."	"not_entailment
+"
+108744	"Along with electric motors, what power sources overtook steam engines in the 20th century?"	Near the end of the 19th century compound engines came into widespread use.	"not_entailment
+"
+108259	What books did Bayle publish?	"Some Huguenot descendants in the Netherlands may be noted by French family names, although they typically use Dutch given names."	"not_entailment
+"
+109850	How many counties initially made up the definition of southern California?	"In 1999, the Times added a newer countyImperialto that list."	"not_entailment
+"
