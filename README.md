@@ -31,8 +31,7 @@ To train a GLUE-style model using this repository:
 python -m cartography.classification.run_glue \
     -c configs/$TASK.jsonnet \
     --do_train \
-    --do_eval \
-    -o $MODEL_OUTPUT_DIR
+    --do_eval 
 ```
 The best configurations for our experiments for each of the `$TASK`s (SNLI, MNLI, QNLI or WINOGRANDE) are provided under [configs](./configs).
 
